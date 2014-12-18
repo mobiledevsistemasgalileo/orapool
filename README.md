@@ -8,7 +8,7 @@ Taking generic-pool(https://github.com/coopernurse/node-pool) and the oracle dri
   * oracle
   * generic-pool 
 
-* npm install orapool
+* npm install ora-pool
 
   
 # Example
@@ -16,7 +16,7 @@ Taking generic-pool(https://github.com/coopernurse/node-pool) and the oracle dri
 ### Basic example
 
 ```javascript
-var orapool = require('orapool'); // Require the Package
+var orapool = require('ora-pool'); // Require the Package
 
 // Oracle Conn Parameters
 var oradata = {
