@@ -47,14 +47,6 @@ pool.acquire(function(err, oraconn) {
         pool.release(oraconn);  // Release conn and bring it back to the pool        
       }
     });  	
-    oraconn.execute("SELECT systimestamp FROM dual", [], function(err, results) {
-      if (err) {  
-      }
-      else {
-        console.log(results);
-        pool.release(oraconn);  // Release conn and bring it back to the pool           
-      }
-    });   
   }
 });
 ```
