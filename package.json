@@ -1,0 +1,30 @@
+{
+  "name": "orapool",
+  "version": "0.0.1",
+  "description": "Basic Pool Oracle Conn for Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mobile Dev Sistemas Galileo",
+  "license": "ISC",
+  "dependencies": {
+    "generic-pool": "^2.1.1",
+    "oracle": "^0.3.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mobiledevsistemasgalileo/orapool"
+  },
+  "keywords": [
+    "oracle",
+    "pool",
+    "node.js",
+    "generic-pool",
+    "basic"
+  ],
+  "bugs": {
+    "url": "https://github.com/mobiledevsistemasgalileo/orapool/issues"
+  },
+  "homepage": "https://github.com/mobiledevsistemasgalileo/orapool"
+}
