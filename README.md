@@ -7,6 +7,9 @@ Taking generic-pool(https://github.com/coopernurse/node-pool) and the oracle dri
 * Prerequisites:
   * oracle
   * generic-pool 
+
+* npm install orapool
+
   
 # Example
 
