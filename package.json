@@ -1,6 +1,6 @@
 {
-  "name": "orapool",
-  "version": "0.0.2",
+  "name": "ora-pool",
+  "version": "0.0.3",
   "description": "Basic Pool Oracle Conn for Node.js",
   "main": "index.js",
   "scripts": {

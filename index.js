@@ -1,13 +1,9 @@
-// index.js (objeto exportado > pool) - parte del conjunto de modulos galutils)
-//
-// enarvaez. 25-Feb-2014. Creacion
-//   Se crea el modulo del pool 
+// enarvaez. 25-Feb-2014. Create
 //
 // Descripcion:
-//   Crear un pool de conectividad a Oracle
-//   Exporta la pila en el objeto pool, el cual se exporta.
+//   Creates a conn pool to Oracle using node-oracle module
 //
-// Modulos NodeJS que requiere:
+// Required NodeJS Modules
 //   fs, generic-pool, oracle
 //
 var fs = require("fs");  // Usa el File System.
@@ -24,11 +20,17 @@ exports.create = function(oradata,pooldata) {
             // En este punto las variables deben estar grabadas
             connectData = { "tns": oradata.tns, "user": oradata.user, "password": oradata.pwd };
             OraClient.connect(connectData, function(err, connection) {
-                if (err) { console.log("Error connecting to db: ", err); }
                 callback(err,connection);
             });
         },
-        destroy  : function(connection) { connection.close(); },  // Se cierra la conexion.
+        destroy  : function(connection) { 
+          try {
+            connection.close(); 
+          }
+          catch (errRelease) {
+            console.log('Error releasing the pool: '+errRelease);
+          }
+        },  // Se cierra la conexion.
         max      : pooldata.max, 
         min      : pooldata.min,  // optional. if you set this, make sure to drain() (see step 3)
         idleTimeoutMillis : pooldata.idelTimeoutMillis, // specifies how long a resource can stay idle in pool before being removed
