@@ -1,17 +1,41 @@
 // enarvaez. 25-Feb-2014. Creation
 //           02-Jul-2015. Handling of some conn problems
+//           19-Ago-2015. Usage of oracledb (Official Oracle component) instead of oracle.
 //
 // Descripcion:
-//   Creates a conn pool to Oracle using node-oracle module
+//   Creates a conn pool to Oracle using oracledb module
 //
 // Required NodeJS Modules
-//   generic-pool, oracle
+//   generic-pool, oracledb
 //
 var poolModule = require('generic-pool');  // Usa el modulo generic-pool
+var OracleDB = require('oracledb');
 
 // Oracle Errors that may indicate a good connection turned bad.
 var ORAInvalidConnErrors = ['ORA-00028','ORA-00022','ORA-12203','ORA-01041',
   'ORA-01012','ORA-03114','ORA-03113'];
+
+exports.STRING = OracleDB.STRING;
+exports.NUMBER = OracleDB.NUMBER;
+exports.DATE = OracleDB.DATE;
+exports.CURSOR = OracleDB.CURSOR;
+exports.OBJECT = OracleDB.OBJECT;
+exports.BIND_IN = OracleDB.BIND_IN;
+exports.BIND_OUT = OracleDB.BIND_OUT;
+exports.BIND_INOUT = OracleDB.BIND_INOUT;
+exports.OBJECT = OracleDB.OBJECT;
+exports.ARRAY = OracleDB.ARRAY;
+OracleDB.outFormat = OracleDB.OBJECT;
+exports.outFormat = OracleDB.outFormat;
+
+exports.OutParam = function(vartype) {
+  var bindvar = {type: vartype, dir: OracleDB.BIND_OUT}
+  return bindvar;
+}
+exports.InOutParam = function(varval, vartype) {
+  var bindvar = {val: varval, type: vartype, dir: OracleDB.BIND_INOUT}
+  return bindvar;
+}
 
 // Functions that creates a pool.
 // oradata expects a json {user:'USER', pwd:'PWD', tnd:'TNSSTRING'}
@@ -20,17 +44,18 @@ exports.create = function(oradata,pooldata) {
   pool = poolModule.Pool({
     name     : pooldata.name,
     create   : function(callback) {  // Crea la conexion.
-      var OraClient = require('oracle');
-      // En este punto las variables deben estar grabadas
-      connectData = { "tns": oradata.tns, "user": oradata.user, "password": oradata.pwd };
-      OraClient.connect(connectData, function(err, connection) {
+      OracleDB.getConnection({
+        user : oradata.user, password  : oradata.pwd, connectString : oradata.tns
+      }, function(err, connection) {
         if (!err) {  // If not error creating connection
           // Add isValid property
           connection.isValid = true;
           // Redefine execute function
-          connection.galexecute = connection.execute;
+          connection.orclexecute = connection.execute;
           connection.execute = function(sqlstr,paramarray,conncallback) {
-            connection.galexecute(sqlstr,paramarray,function(err, results) {
+            connection.orclexecute(sqlstr,paramarray,
+              {autoCommit: true}, 
+              function(err, results) {
               if (err) {
                 // Check the error type against defined array.
                 var found = false;
@@ -47,9 +72,20 @@ exports.create = function(oradata,pooldata) {
                 }
                 // Assign to validation property
                 connection.isValid = !found;
+                // Call original callback
+                conncallback(err,results); // Send only the data
               }
-              // Call original callback
-              conncallback(err,results);
+              else {
+                if (results.outBinds) {
+                  // Call original callback
+                  var outresults = {resultParams: results.outBinds};
+                  conncallback(err,outresults); // Send the outParams
+                }
+                else {
+                  // Call original callback
+                  conncallback(err,results.rows); // Send only the data
+                }
+              }
             });
           };
         }
@@ -59,7 +95,7 @@ exports.create = function(oradata,pooldata) {
     },
     destroy  : function(connection) { 
       try {
-        connection.close(); 
+        connection.release(function(err) {console.log('Error releasing the pool'+err)}); 
       }
       catch (errRelease) {
         console.log('Error releasing the pool: '+errRelease);
