@@ -95,7 +95,7 @@ exports.create = function(oradata,pooldata) {
     },
     destroy  : function(connection) { 
       try {
-        connection.release(function(err) {console.log('Error releasing the pool'+err)}); 
+        connection.release(function(err) {if (err) {console.log('Error releasing the pool-->'+err)}}); 
       }
       catch (errRelease) {
         console.log('Error releasing the pool: '+errRelease);
