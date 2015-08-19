@@ -8,7 +8,7 @@ Taking generic-pool(https://github.com/coopernurse/node-pool) and the official o
   * oracledb
   * generic-pool 
   
-* npm install orapool
+* npm install ora-pool
   
 # GIT Repository
 
@@ -20,7 +20,7 @@ https://github.com/mobiledevsistemasgalileo/orapool
 
 ```javascript
 var
-  orapool = require('orapool');
+  orapool = require('ora-pool');
 
 
 var oradata = {
