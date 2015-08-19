@@ -1,15 +1,15 @@
 # Oracle Pool for Node.js
 
-Taking generic-pool(https://github.com/coopernurse/node-pool) and the oracle driver (https://github.com/joeferner/node-oracle) to create a very basic pool of Oracle connections.
+Taking generic-pool(https://github.com/coopernurse/node-pool) and the official oracle driver (https://github.com/oracle/node-oracledb) to create a very basic pool of Oracle connections.
 
 # Basic installation
 
 * Prerequisites:
-  * oracle
+  * oracledb
   * generic-pool 
-
-* npm install ora-pool
-
+  
+* npm install orapool
+  
 # GIT Repository
 
 https://github.com/mobiledevsistemasgalileo/orapool
@@ -19,39 +19,67 @@ https://github.com/mobiledevsistemasgalileo/orapool
 ### Basic example
 
 ```javascript
-var orapool = require('ora-pool'); // Require the Package
+var
+  orapool = require('orapool');
 
-// Oracle Conn Parameters
+
 var oradata = {
-  user:'TC', 
-  pwd:'TCAP', 
-  tns:'(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (COMMUNITY = tcp.world) (PROTOCOL = TCP) (Host = 10.3.1.238) (Port = 1525)))(CONNECT_DATA = (SID = TCAP)))'
+  user : "FS_REGHORAS",
+  pwd  : "FSREGHORAS",
+  tns  : "TNSDATA"
 };
-// Pool Parameters
 var pooldata = {
-  name:'oraclepool',   // name of pool
-  min: 0,              // min number of positions
-  max: 10,             // max number of positions
-  idleTimeoutMillis: 15000, // time before releasing resource and returning it to the pool
-  log:true  // writes in console
+  name              : 'fspool',
+  min               : 0,
+  max               : 3,
+  idleTimeoutMillis : 30000,
+  log               : true
 };
-// Pool creation
+// Creacion del pool
 var pool = orapool.create(oradata, pooldata);
-// Pool usage
-pool.acquire(function(err, oraconn) {
+
+pool.acquire(function (err, oraconn) {
   if (err) {
-    console.log("Error connecting with ORACLE:" + err);
-  } else {
-    oraconn.execute("SELECT systimestamp FROM dual", [], function(err, results) {
-      if (err) {  
+    response = { code: 'error', message: 'Error .getTimeSheetbyDay> Could not connect to the Database..' };
+    res.send(response);
+    console.log("Error connecting to ORACLE:" + err);
+  }
+  else {
+    console.log("Connection Pool Aquired.");
+    var bindvars = {
+      a : new orapool.OutParam(orapool.NUMBER),  
+      c  : new orapool.OutParam(orapool.CURSOR)
+    } 
+    // Executing a stored procedure with 2 OUT parameters
+    // If there is only a IN parameter, just specify the value, like this..
+    //
+    //  a: 'entrada'
+    //
+    // If there is a INOUT parameter, use the InOutParam function, like this...
+    //
+    //  a: new orapool.InOutParam('test',orapool.STRING)
+    //
+    oraconn.execute('call testproc(:a, :c)', bindvars, function(err, result) {
+      if (err) {
+        console.log('Error' + err);
       }
       else {
-        console.log(results);
-        pool.release(oraconn);  // Release conn and bring it back to the pool        
+        console.log(result.resultParams.a); // a is a number
+        // Since c is a cursor, we need to fetch the rows...
+        result.resultParams.c.getRows(10000, function(err, rows) {
+          if (err) {
+            console.log(err);
+          }
+          else {
+            console.log(rows);  // rows is an object array...
+          }
+        })
       }
-    });  	
+      pool.release(oraconn);  // Connection Pool Released
+    });
   }
 });
+
 ```
 
 # Limitations/Caveats
@@ -62,4 +90,3 @@ pool.acquire(function(err, oraconn) {
 # Development
 * Clone the source repo
 * Go wild
-
