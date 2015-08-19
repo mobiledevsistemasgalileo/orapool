@@ -1,6 +1,6 @@
 {
   "name": "ora-pool",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Basic Pool Oracle Conn for Node.js",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "generic-pool": "^2.1.1",
-    "oracle": "^0.3.7"
+    "oracledb": "^1.0.0"
   },
+  "engine": "node >= 0.12.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/mobiledevsistemasgalileo/orapool"
