@@ -16,6 +16,9 @@ var ORAInvalidConnErrors = ['ORA-00028','ORA-00022','ORA-12203','ORA-01041',
   'ORA-01012','ORA-03114','ORA-03113'];
 
 exports.STRING = OracleDB.STRING;
+exports.BLOB = OracleDB.BLOB;
+exports.BUFFER = OracleDB.BUFFER;
+exports.CLOB = OracleDB.CLOB;
 exports.NUMBER = OracleDB.NUMBER;
 exports.DATE = OracleDB.DATE;
 exports.CURSOR = OracleDB.CURSOR;
@@ -29,11 +32,15 @@ OracleDB.outFormat = OracleDB.OBJECT;
 exports.outFormat = OracleDB.outFormat;
 
 exports.OutParam = function(vartype) {
-  var bindvar = {type: vartype, dir: OracleDB.BIND_OUT}
+  var bindvar = {type: vartype, dir: OracleDB.BIND_OUT};
   return bindvar;
 }
 exports.InOutParam = function(varval, vartype) {
-  var bindvar = {val: varval, type: vartype, dir: OracleDB.BIND_INOUT}
+  var bindvar = {val: varval, type: vartype, dir: OracleDB.BIND_INOUT};
+  return bindvar;
+}
+exports.InParam = function(varval, vartype) {
+  var bindvar = {val: varval, type: vartype, dir: OracleDB.BIND_IN};
   return bindvar;
 }
 
